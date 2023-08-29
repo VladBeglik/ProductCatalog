@@ -3,7 +3,7 @@
 public class Product : BaseEntity
 {
     public string Name { get; set; } = null!;
-    public Category? CategoryId { get; set; }
+    public string? CategoryId { get; set; }
     public Category? Category { get; set; }
     public string Description { get; set; } = null!;
     public decimal Price { get; set; }
