@@ -37,12 +37,15 @@ namespace Identity.API.Infrastructure
 
                 o.SwaggerDoc(version, new OpenApiInfo
                 {
-                    Title = $"{nameof(BookStore)} API",
+                    Title = $"{nameof(Identity)} API",
                     Version = version,
                 });
                 
                 o.ConfigureForNodaTimeWithSystemTextJson();
+                
             });
+            
+            
 
             return services;
         }

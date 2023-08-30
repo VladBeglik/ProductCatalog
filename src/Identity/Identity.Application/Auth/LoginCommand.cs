@@ -8,17 +8,18 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using NamingConvention;
 using NodaTime;
 
 namespace Identity.Application.Auth;
 
-public class Login : IRequest<IActionResult>
+public class LoginCommand : IRequest<IActionResult>
 {
     public string Username { get; set; } = null!;
     public string Password { get; set; } = null!;
 }
 
-public class LoginCommandHandler : IRequestHandler<Login, IActionResult>
+public class LoginCommandHandler : IRequestHandler<LoginCommand, IActionResult>
 {
     private readonly UserManager<User> _userManager;
     private readonly IConfiguration _configuration;
@@ -33,7 +34,7 @@ public class LoginCommandHandler : IRequestHandler<Login, IActionResult>
         _tokenService = tokenService;
     }
 
-    public async Task<IActionResult> Handle(Login request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var user = await _userManager.FindByNameAsync(request.Username!);
         

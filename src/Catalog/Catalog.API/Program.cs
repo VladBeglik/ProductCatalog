@@ -1,8 +1,8 @@
 using System.Reflection;
-using Automapper.Infrastructure.Infrastructure;
 using BookStore.API.Infrastructure.Filters;
 using Catalog.API.Infrastructure;
 using Catalog.API.Infrastructure.Filters;
+using Catalog.Application.Infrastructure.Mapping;
 using NodaTime;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +13,7 @@ builder.Services
     .AddProjectDbContexts(builder.Configuration)
     .AddCustomSwagger(builder.Configuration)
     .AddAutoMapper(appAssembly)
+    .AddCustomHttpClients(builder.Configuration)
     .AddRouting(o => { o.LowercaseUrls = true; })
     .AddSingleton<IClock>(sp => SystemClock.Instance)
     .AddHttpContextAccessor()

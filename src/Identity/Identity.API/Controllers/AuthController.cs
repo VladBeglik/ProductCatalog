@@ -7,52 +7,46 @@ namespace Identity.API.Controllers;
 
 public class AuthController : MediatrController
 {
-    private readonly IMediator _mediator;
-
-    public AuthController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
 
     [HttpPost]
     [Route("login")]
-    public async Task<IActionResult> Login([FromBody] Login model)
+    public async Task<IActionResult> Login([FromBody] LoginCommand model)
     {
-        var result = await _mediator.Send(model);
+        var result = await Mediator.Send(model);
         return result;
     }
 
     [HttpPost]
     [Route("register")]
-    public async Task<IActionResult> Register([FromBody] Registration model)
+    public async Task<IActionResult> Register([FromBody] RegistrationCommand model)
     {
-        var result = await _mediator.Send(model);
+        var result = await Mediator.Send(model);
         return result;
     }
 
     [HttpPost]
     [Route("register-admin")]
-    public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
+    public async Task<IActionResult> RegisterAdmin([FromBody] RegistrationAdminCommand model)
     {
-        var result = await _mediator.Send(new RegisterAdminCommand(model));
+        var result = await Mediator.Send(model);
         return result;
     }
 
     [HttpPost]
     [Route("refresh-token")]
-    public async Task<IActionResult> RefreshToken(TokenModel tokenModel)
+    public async Task<IActionResult> RefreshToken(RefreshTokenCommand tokenModel)
     {
-        var result = await _mediator.Send(new RefreshTokenCommand(tokenModel));
+        var result = await Mediator.Send(tokenModel);
         return result;
     }
 
     [Authorize]
     [HttpPost]
     [Route("revoke/{username}")]
-    public async Task<IActionResult> Revoke(string username)
+    public async Task<IActionResult> Revoke(string userId)
     {
-        var result = await _mediator.Send(new RevokeCommand(username));
-        return result;
+        await Mediator.Send(new RevokeCommand{UserId = userId});
+        return NoContent();
     }
 
     [Authorize]
@@ -60,7 +54,7 @@ public class AuthController : MediatrController
     [Route("revoke-all")]
     public async Task<IActionResult> RevokeAll()
     {
-        var result = await _mediator.Send(new RevokeAllCommand());
-        return result;
+        await Mediator.Send(new RevokeAllCommand());
+        return NoContent();
     }
 }

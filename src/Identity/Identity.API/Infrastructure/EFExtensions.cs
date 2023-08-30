@@ -1,40 +1,13 @@
-using EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using Identity.Application.Infrastructure;
 using Identity.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using NodaTime;
 
 namespace Identity.API.Infrastructure
 {
     public static class EFExtensions
     {
-        public static IServiceCollection AddProjectDbContexts(this IServiceCollection services, IConfiguration configuration)
-        {
-            var migrationsAssembly = typeof(IdentityDbContext).Assembly;
-
-            var connectionString = configuration.GetConnectionString("SqlServer");
-
-            services.AddDbContext<IdentityDbContext>(options =>
-            {
-                options.UseSqlServer(connectionString, o =>
-                {
-                    o.MigrationsAssembly(migrationsAssembly.GetName().Name);
-                    o.EnableRetryOnFailure(15);
-                    o.UseNodaTime();
-                });
-
-                if (!LogSqlToConsole) return;
-
-                //options.EnableSensitiveDataLogging();
-                //options.UseLoggerFactory(GetConsoleLoggerFactory());
-            }
-            );
-
-            services.AddScoped<IIdentityDbContext, IdentityDbContext>();
-
-            return services;
-        }
-
         public static void DatabaseMigrate(this IHost host)
         {
             using var scope = host.Services.CreateScope();

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Reflection.Emit;
 using Identity.Application.Infrastructure;
 using Identity.Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -13,6 +14,8 @@ public class IdentityDbContext : IdentityDbContext<User>, IIdentityDbContext
     #region Fields
     private readonly IClock _clock;
     #endregion
+
+    public DbSet<User> Users { get; set; }
 
     #region ctors
     public IdentityDbContext()
@@ -34,6 +37,7 @@ public class IdentityDbContext : IdentityDbContext<User>, IIdentityDbContext
     {
         builder
             .ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        base.OnModelCreating(builder);
     }
 
     public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken token = default)

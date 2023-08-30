@@ -1,8 +1,6 @@
 ﻿using System.Reflection;
 using System.Text;
-using EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using Identity.Application.Infrastructure;
-using Identity.Application.Infrastructure.Exceptions;
 using Identity.Domain;
 using Identity.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,10 +22,10 @@ public static class IdentityExtensions
         services
             .AddIdentity<User, IdentityRole>(_ =>
             {
-                _.Password.RequireDigit = true;
+                _.Password.RequireDigit = false;
                 _.Password.RequireUppercase = false;
                 _.Password.RequireNonAlphanumeric = false;
-                _.Password.RequiredLength = 8;
+                _.Password.RequiredLength = 4;
                 _.Password.RequireLowercase = false;
             })
             .AddEntityFrameworkStores<IdentityDbContext>()
@@ -40,20 +38,20 @@ public static class IdentityExtensions
             options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         })
             
-            .AddJwtBearer(options =>
+        .AddJwtBearer(options =>
+        {
+            options.SaveToken = false;
+            options.RequireHttpsMetadata = false;
+            options.TokenValidationParameters = new TokenValidationParameters
             {
-                options.SaveToken = true;
-                options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidAudience = configuration["JWTKey:ValidAudience"],
-                    ValidIssuer = configuration["JWTKey:ValidIssuer"],
-                    ClockSkew = TimeSpan.Zero,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWTKey:Secret"]))
-                };
-            });
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidAudience = "https://localhost:5001",
+                ValidIssuer = "https://localhost:5001",
+                ClockSkew = TimeSpan.Zero,
+                IssuerSigningKey = new SymmetricSecurityKey("JWTRefreshTokenHIGHsecuredPasswordVVVp1OH7Xzyr"u8.ToArray())
+            };
+        });
         
         services
             .AddDbContext<IdentityDbContext>(_ =>

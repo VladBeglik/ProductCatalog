@@ -11,7 +11,7 @@ public class CreateUserCommand : IRequest<string>
 {
     public string UserName { get; set; } = null!;
     public string Password { get; set; }= null!;
-    public int? Role { get; set; }
+    public string? Role { get; set; }
 }
 
 public class  CreateUserCommandHandler : IRequestHandler<CreateUserCommand, string>
@@ -32,13 +32,19 @@ public class  CreateUserCommandHandler : IRequestHandler<CreateUserCommand, stri
         {
             Id = Guid.NewGuid().ToString(),
             UserName = request.UserName,
-            Role = request.Role.HasValue ? Roles.SimpleUser : request.Role!.Value
         };
+        
+        
 
         var userCreateRes = await _userManager.CreateAsync(user, request.Password);
         
-        
         if (!userCreateRes.Succeeded)
+            throw new CustomException(ExMsg.User.UserNotCreated());
+
+        var res = await _userManager.AddToRoleAsync(user,
+            string.IsNullOrEmpty(request.Role) ? Roles.SimpleUser : request.Role);
+        
+        if (!res.Succeeded)
             throw new CustomException(ExMsg.User.UserNotCreated());
 
 
