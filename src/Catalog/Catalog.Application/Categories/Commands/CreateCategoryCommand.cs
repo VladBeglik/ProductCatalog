@@ -2,7 +2,7 @@ using Catalog.Application.Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Catalog.Application.Category.Commands;
+namespace Catalog.Application.Categories.Commands;
 
 public class CreateCategoryCommand : IRequest<string>
 {

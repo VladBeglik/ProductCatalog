@@ -1,19 +1,20 @@
-using Catalog.Application.Infrastructure;
-using Catalog.Persistence;
+using EntityFrameworkCore.SqlServer.NodaTime.Extensions;
+using Identity.Application.Infrastructure;
+using Identity.Persistence;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 
-namespace Catalog.API.Infrastructure
+namespace Identity.API.Infrastructure
 {
     public static class EFExtensions
     {
         public static IServiceCollection AddProjectDbContexts(this IServiceCollection services, IConfiguration configuration)
         {
-            var migrationsAssembly = typeof(CatalogDbContext).Assembly;
+            var migrationsAssembly = typeof(IdentityDbContext).Assembly;
 
             var connectionString = configuration.GetConnectionString("SqlServer");
 
-            services.AddDbContext<CatalogDbContext>(options =>
+            services.AddDbContext<IdentityDbContext>(options =>
             {
                 options.UseSqlServer(connectionString, o =>
                 {
@@ -29,7 +30,7 @@ namespace Catalog.API.Infrastructure
             }
             );
 
-            services.AddScoped<ICatalogDbContext, CatalogDbContext>();
+            services.AddScoped<IIdentityDbContext, IdentityDbContext>();
 
             return services;
         }
@@ -37,14 +38,14 @@ namespace Catalog.API.Infrastructure
         public static void DatabaseMigrate(this IHost host)
         {
             using var scope = host.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
+            var context = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
             var clock = scope.ServiceProvider.GetRequiredService<IClock>();
             context.Database.Migrate();
             Seed(context);
 
         }
 
-        private static async void Seed(ICatalogDbContext ctx)
+        private static async void Seed(IdentityDbContext ctx)
         {
             // if (ctx.Books.Any())
             //     return;
