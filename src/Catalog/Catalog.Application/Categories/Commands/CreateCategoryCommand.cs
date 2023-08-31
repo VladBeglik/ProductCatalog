@@ -14,15 +14,19 @@ public class CreateCategoryCommand : IRequest<string>
 public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, string>
 {
     private readonly ICatalogDbContext _ctx;
+    private readonly ICurrentUserService _currentUser;
 
-    public CreateCategoryCommandHandler(ICatalogDbContext ctx)
+    public CreateCategoryCommandHandler(ICatalogDbContext ctx, ICurrentUserService currentUser)
     {
         _ctx = ctx;
+        _currentUser = currentUser;
     }
 
     public async Task<string> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
     {
-
+        var id = _currentUser.UserId;
+        
+        
         var products = await _ctx.Products
             .Where(_ => request.ProductIds != null && request.ProductIds.Contains(_.Id))
             .ToListAsync(cancellationToken);

@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Catalog.Application.Infrastructure;
 using Identity.Application.Infrastructure;
 using Identity.Domain;
+using IdentityModel;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
@@ -45,11 +46,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, IActionResult>
 
         var authClaims = new List<Claim>
         {
-            new(ClaimTypes.Name, user.UserName),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtClaimTypes.Subject, user.Id),
+            new(JwtRegisteredClaimNames.UniqueName, user.UserName),
         };
             
-        authClaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
+        authClaims.AddRange(userRoles.Select(userRole => new Claim(JwtClaimTypes.Role, userRole)));
 
         var token = _tokenService.GenerateAccessToken(authClaims);
         var refreshToken = _tokenService.GenerateRefreshToken();

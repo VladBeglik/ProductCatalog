@@ -2,12 +2,13 @@ using System.Reflection;
 using Identity.API.Infrastructure;
 using Identity.API.Infrastructure.Filters;
 using Identity.Application.Infrastructure;
+using Microsoft.IdentityModel.Logging;
 using NodaTime;
 
 var builder = WebApplication.CreateBuilder(args);
 var appAssembly = typeof(AutoMapperProfile).GetTypeInfo().Assembly;
 var pathBase = builder.Configuration["PATH_BASE"];
-
+IdentityModelEventSource.ShowPII = true;
 builder.Services
     .AddCustomIdentity(builder.Configuration, builder.Environment)
     .AddCustomSwagger(builder.Configuration)

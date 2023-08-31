@@ -30,28 +30,6 @@ public static class IdentityExtensions
             })
             .AddEntityFrameworkStores<IdentityDbContext>()
             .AddDefaultTokenProviders();
-
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-            
-        .AddJwtBearer(options =>
-        {
-            options.SaveToken = false;
-            options.RequireHttpsMetadata = false;
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidAudience = "https://localhost:5001",
-                ValidIssuer = "https://localhost:5001",
-                ClockSkew = TimeSpan.Zero,
-                IssuerSigningKey = new SymmetricSecurityKey("JWTRefreshTokenHIGHsecuredPasswordVVVp1OH7Xzyr"u8.ToArray())
-            };
-        });
         
         services
             .AddDbContext<IdentityDbContext>(_ =>
