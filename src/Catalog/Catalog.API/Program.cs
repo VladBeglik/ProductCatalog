@@ -37,8 +37,8 @@ builder.Services
 
 builder.Services
     .AddScoped<ICurrentUserService, CurrentUserService>()
-    .AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
+    .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+    ;
 
 
 var app = builder.Build();

@@ -3,7 +3,9 @@ using System.Text;
 using Identity.Application.Infrastructure;
 using Identity.Domain;
 using Identity.Persistence;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -19,7 +21,31 @@ public static class IdentityExtensions
 
         var migrationsAssembly = typeof(IdentityDbContext).GetTypeInfo().Assembly.GetName().Name;
 
-        services
+        
+        services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddCookie()
+            .AddOpenIdConnect(options =>
+            {
+                options.Authority = "https://localhost:5001";
+                options.ClientId = "client-id-of-auth-service";
+                options.ClientSecret = "client-secret-of-auth-service";
+                options.CallbackPath = "/signin-oidc";
+                options.SaveTokens = true; // Сохранять токены для дальнейшего использования
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey("your-signing-key"u8.ToArray()),
+                    ValidateIssuer = true,
+                    ValidIssuer = "https://localhost:5001",
+                    ValidateAudience = true,
+                    ValidAudience = "your-client-id",
+                };
+            });
+            services
             .AddIdentity<User, IdentityRole>(_ =>
             {
                 _.Password.RequireDigit = false;
@@ -31,6 +57,8 @@ public static class IdentityExtensions
             .AddEntityFrameworkStores<IdentityDbContext>()
             .AddDefaultTokenProviders();
         
+                
+            
         services
             .AddDbContext<IdentityDbContext>(_ =>
             {

@@ -17,7 +17,7 @@ namespace Catalog.API.Infrastructure
             _httpContextAccessor = httpContextAccessor;
             InitializeUser();
 
-            var n = _httpContextAccessor.HttpContext.User.Identity.Name;
+            var n = _httpContextAccessor.HttpContext.User.FindFirstValue("sub");
         }
 
         private void InitializeUser()
